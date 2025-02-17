@@ -1,5 +1,7 @@
 import ENUMS.*;
+import model.Bus;
 import model.Company;
+import model.filter.BusLineFilter;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,6 +14,9 @@ import ENUMS.ComfortRating;
 import org.mockito.MockedStatic;
 import repository.BusRepository;
 import service.BusService;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class BusServiceTest {
 
@@ -83,5 +88,33 @@ public class BusServiceTest {
                         busType, activityStatus, comfortRating, company));
             }
         }
+
+    @Test
+    public void testGetBusList() {
+
+        model.filter.Bus filter = new model.filter.Bus("VIN123");
+
+        model.Bus bus1 = new model.Bus("bus1", "Volvo", "VIN123", 50, BusType.COACH, ActivityStatus.ACTIVE, ComfortRating.THREE_STARS);
+        model.Bus bus2 = new model.Bus("bus2", "Mercedes", "VIN1234", 40, BusType.MINIBUS, ActivityStatus.ACTIVE, ComfortRating.FOUR_STARS);
+        List<model.Bus> expectedList = Arrays.asList(bus1, bus2);
+
+
+        try (MockedStatic<BusRepository> mockedRepo = mockStatic(BusRepository.class)) {
+            mockedRepo.when(() -> BusRepository.getByFilter(filter)).thenReturn(expectedList);
+            List<model.Bus> actualList = BusService.getBusList(filter);
+
+            assertEquals(expectedList, actualList);
+        }
+    }
+
+    @Test
+    public void testGetBusListEdge() {
+        //TODO
+    }
+
+    @Test
+    public void testGetBusListException() {
+        //TODO
+    }
     }
 
