@@ -9,9 +9,6 @@ public class ClearForm {
     public static void clearFormInputs(Pane pane){
         clearInput(pane);
     }
-
-
-
     private static void clearInput(Pane pane) {
         for (Node node : pane.getChildren()) {
             if (node instanceof Pane) {

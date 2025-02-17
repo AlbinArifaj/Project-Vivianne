@@ -21,11 +21,8 @@ public class UserService {
             System.out.println("Passwords do not match");
             return false;
         }
-
         String salt = PasswordHasher.generateSalt();
         String hashedPassword= PasswordHasher.generateSaltedHash(user.getPassword(),salt);
-
-
         CreateUser createUser = new CreateUser(
                 user.getId(),
                 user.getFirstName(),
@@ -37,14 +34,11 @@ public class UserService {
                 user.getRole(),
                 user.getBirthday()
         );
-
         return UserRepository.insertUser(createUser);
-
     }
 
     public static int checkDuplicate(String firstName,String lastName) {
         return UserRepository.checkDuplicate(firstName, lastName);
-
     }
 
     public static void insertSuperAdmin(){
@@ -94,27 +88,20 @@ public class UserService {
                 System.out.println("User not found");
                 return;
             }
-
             String currentPassword = changePassword.getCurrentPassword();
             String storedSalt = user.getSalt();
             String storedHashedPassword = user.getHashedPassword();
-
             if (!PasswordHasher.compareSaltedHash(currentPassword, storedSalt, storedHashedPassword)) {
                 System.out.println("Current password is incorrect");
                 return;
             }
-
             if (!changePassword.getNewPassword().equals(changePassword.getConfirmNewPassword())) {
                 return;
             }
-
             String newSalt = PasswordHasher.generateSalt();
             String newHashedPassword = PasswordHasher.generateSaltedHash( changePassword.getNewPassword(),newSalt);
-
-
             UserRepository.updatePassword(new UpdateUser(changePassword.getId(), newSalt, newHashedPassword));
             System.out.println("Password updated successfully");
-
         } catch (Exception e) {
             System.out.println("Error updating password: " + e.getMessage());
         }

@@ -8,7 +8,15 @@ module Vivianne {
 
     exports app;
     opens controller to javafx.fxml ,javafx.base;
-//    opens Vivianne to javafx.base;
     opens model to javafx.fxml ,javafx.base;
+
+    exports service;
+    exports repository;
+    exports model.dto;
+    exports model.filter;
+    exports controller;
+    exports ENUMS;
+    exports model;
+
 
 }

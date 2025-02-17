@@ -58,10 +58,7 @@ public class TranslateRecords {
                 translateForm("sq", pane);
             }
         }
-
-
-
-        private static void translateForm(String language,Pane pane) {
+    private static void translateForm(String language,Pane pane) {
             Locale locale = new Locale(language);
             ResourceBundle bundle = ResourceBundle.getBundle("translations.content", locale);
             try {
@@ -93,8 +90,5 @@ public class TranslateRecords {
                 }
             }catch (NullPointerException e) {
             }
-
         }
-
-
 }

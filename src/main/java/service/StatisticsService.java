@@ -44,7 +44,6 @@ public class StatisticsService {
         });
         return lineRatio;
     }
-
     public static List<AreaCodeStatistic> getAreaCodeStatisticList(int weeks){
         List<AreaCodeStatistic> acsl = new ArrayList<>();
         for (int i = 1; i < 8;i++){
