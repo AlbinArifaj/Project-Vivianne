@@ -12,6 +12,9 @@ public class BusService {
     public static boolean createBus(String busId, String busModel, String vin,
                                     int passengerCapacity, BusType busType,
                                     ActivityStatus activityStatus, ComfortRating comfortRating, Company company){
+        if(busModel == null || busModel.trim().isEmpty()){
+            return false;
+        }
         return BusRepository.createBus(busId,busModel,vin,passengerCapacity,busType,activityStatus,comfortRating,company);
     }
     public static List<model.Bus> loadInitial(model.Company cmp){
