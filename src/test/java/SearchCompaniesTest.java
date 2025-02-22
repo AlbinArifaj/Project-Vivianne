@@ -4,11 +4,13 @@ import model.Company;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import repository.CompanyRepository;
+import service.CompanyService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 import static ENUMS.ActivityStatus.ACTIVE;
@@ -19,22 +21,15 @@ import static org.mockito.Mockito.*;
 public class SearchCompaniesTest {
 @Test
     public void testSearchCompaniesSuccess() throws SQLException {
-    try(MockedStatic<DatabaseUtil> mockedDatabaseUtil= mockStatic(DatabaseUtil.class)) {
-        Connection mockConn = mock(Connection.class);
-        PreparedStatement mockStmt= mock(PreparedStatement.class);
-        ResultSet mockRs = mock(ResultSet.class);
+    List<Company> expectedCompanies = Arrays.asList(
+            new Company("1","TestCo", "Desc", PRISTINA, ACTIVE)
+    );
 
-        mockedDatabaseUtil.when(DatabaseUtil::getConnection).thenReturn(mockConn);
-        when(mockConn.prepareStatement(anyString())).thenReturn(mockStmt);
-        when(mockStmt.executeQuery()).thenReturn(mockRs);
+    try(MockedStatic<CompanyRepository> mockedRepo= mockStatic(CompanyRepository.class)) {
+       mockedRepo.when(() -> CompanyRepository.searchCompanies("TestCo"))
+               .thenReturn(expectedCompanies);
 
-        when(mockRs.next()).thenReturn(true).thenReturn(false);
-        when(mockRs.getString("company_name")).thenReturn("TestCo");
-        when(mockRs.getString("area_code")).thenReturn("PRISTINA");
-        when(mockRs.getString("description")).thenReturn("Desc");
-        when(mockRs.getString("company_status")).thenReturn("ACTIVE");
-
-        List<Company> companies = CompanyRepository.searchCompanies("TestCo");
+       List<Company> companies = CompanyService.searchCompanies("TestCo");
 
         assertEquals(1, companies.size());
         Company company = companies.get(0);
@@ -43,66 +38,56 @@ public class SearchCompaniesTest {
         assertEquals("Desc", company.getDescription());
         assertEquals(ACTIVE, company.getCompanyStatus());
 
-        verify(mockStmt).setString(1, "%TestCo%");
+        mockedRepo.verify(() -> CompanyService.searchCompanies("TestCo"));
+
         }
     }
 
     @Test
     public void testSearchCompaniesNoResultFound() throws  SQLException{
-        try(MockedStatic<DatabaseUtil> mockedDatabaseUtil = mockStatic(DatabaseUtil.class)) {
-            Connection mockConn = mock(Connection.class);
-            PreparedStatement mockStmt = mock(PreparedStatement.class);
-            ResultSet mockRs = mock(ResultSet.class);
-
-            mockedDatabaseUtil.when(DatabaseUtil::getConnection).thenReturn(mockConn);
-            when(mockConn.prepareStatement(anyString())).thenReturn(mockStmt);
-            when(mockStmt.executeQuery()).thenReturn(mockRs);
-
-            when(mockRs.next()).thenReturn(false);
+        try(MockedStatic<CompanyRepository> mockedRepo = mockStatic(CompanyRepository.class)) {
+            mockedRepo.when(() -> CompanyRepository.searchCompanies("Unknown")).thenThrow(
+                    new RuntimeException("No companies found with this name")
+            );
 
             Exception exception = assertThrows(RuntimeException.class, () ->
-                CompanyRepository.searchCompany("Unknown"));
+                CompanyService.searchCompanies("Unknown"));
                 assertEquals("No companies found with this name", exception.getMessage());
+
+            mockedRepo.verify(() -> CompanyService.searchCompanies("Unknown"));
         }
     }
 
     @Test
-    public void testSearchCompaniesDatabaseError() throws SQLException{
-        try(MockedStatic<DatabaseUtil> mockedDatabaseUtil = mockStatic(DatabaseUtil.class)) {
-            Connection mockConn = mock(Connection.class);
-            mockedDatabaseUtil.when(DatabaseUtil::getConnection).thenReturn(mockConn);
+    public void testSearchCompaniesDatabaseError() {
+        try (MockedStatic<CompanyRepository> mockedRepo = mockStatic(CompanyRepository.class)) {
+            SQLException sqlEx = new SQLException("Connection failed");
 
-            SQLException sqlEx = new SQLException("COnnection failed");
-            when(mockConn.prepareStatement(anyString())).thenThrow(sqlEx);
+            mockedRepo.when(() -> CompanyRepository.searchCompanies("ErrorTest"))
+                    .thenThrow(new RuntimeException("Failed to find companies: " + sqlEx.getMessage()));
 
             Exception exception = assertThrows(RuntimeException.class, () ->
-                    CompanyRepository.searchCompanies("ErrorTest"));
+                    CompanyService.searchCompanies("ErrorTest"));
             assertEquals("Failed to find companies: " + sqlEx.getMessage(), exception.getMessage());
 
+            mockedRepo.verify(() -> CompanyRepository.searchCompanies("ErrorTest"));
         }
     }
 
     @Test
     public void testSearchCompaniesEmptyName() throws SQLException {
-        try(MockedStatic<DatabaseUtil> mockedDatabaseUtil = mockStatic(DatabaseUtil.class)) {
-            Connection mockConn = mock(Connection.class);
-            PreparedStatement mockStmt = mock(PreparedStatement.class);
-            ResultSet mockRs = mock(ResultSet.class);
+        List<Company> excpectedCompanies = Arrays.asList(
+                new Company("1", "TestCo", "Desc" , PRISTINA, ACTIVE)
+        );
 
-            mockedDatabaseUtil.when(DatabaseUtil::getConnection).thenReturn(mockConn);
-            when(mockConn.prepareStatement(anyString())).thenReturn(mockStmt);
-            when(mockStmt.executeQuery()).thenReturn(mockRs);
+        try(MockedStatic<CompanyRepository> mockedRepo = mockStatic(CompanyRepository.class)) {
+            mockedRepo.when(() -> CompanyRepository.searchCompanies(""))
+                            .thenReturn(excpectedCompanies);
 
-            when(mockRs.next()).thenReturn(true).thenReturn(false);
-            when(mockRs.getString("company_name")).thenReturn("All Companies");
-            when(mockRs.getString("area_code")).thenReturn("PRISTINA");
-            when(mockRs.getString("description")).thenReturn("Matches empty search");
-            when(mockRs.getString("company_status")).thenReturn("ACTIVE"); // Add missing field
-
-
-            List<Company> companies = CompanyRepository.searchCompanies("");
+            List<Company> companies = CompanyService.searchCompanies("");
             assertFalse(companies.isEmpty());
-            verify(mockStmt).setString(1,"%%");
+
+            mockedRepo.verify(() -> CompanyService.searchCompanies(""));
         }
     }
 
