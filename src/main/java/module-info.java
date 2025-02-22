@@ -7,6 +7,8 @@ module Vivianne {
     requires java.desktop;
 
     exports app;
+    exports databaseConnection;
+    //exports databaseConnection to org.mockito;
     opens controller to javafx.fxml ,javafx.base;
     opens model to javafx.fxml ,javafx.base;
 
