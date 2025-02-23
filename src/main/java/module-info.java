@@ -9,7 +9,8 @@ module Vivianne {
     exports app;
     exports databaseConnection;
     //exports databaseConnection to org.mockito;
-    opens controller to javafx.fxml ,javafx.base;
+//    opens controller to javafx.fxml ,javafx.base;
+    opens controller;
     opens model to javafx.fxml ,javafx.base;
 
     exports service;
@@ -19,6 +20,5 @@ module Vivianne {
     exports controller;
     exports ENUMS;
     exports model;
-
 
 }
