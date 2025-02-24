@@ -14,14 +14,12 @@ import java.time.LocalDateTime;
 
 
 public class SignUpTest {
-
-
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
     }
     @org.junit.Test
-    public void testSignUp_successfulRegistration() {
+    public void testSignUpSuccessfulRegistration() {
         UserDto userDto = new UserDto("2", "Albin", "Arifaj", "albin@viviane.com", "albinn", "password", "password", Role.USER, LocalDateTime.now());
         String salt = "salt";
         String hashedPassword = "hashedPassword";
@@ -36,7 +34,7 @@ public class SignUpTest {
         }
     }
     @org.junit.Test
-    public void testSignUp_failedRegistration() {
+    public void testSignUpFailedRegistration() {
         UserDto userDto = new UserDto("3", "Albin", "Arifaj", "albin@viviane.com", "albin", "password", "password", Role.USER, LocalDateTime.now());
         String salt = "salt";
         String hashedPassword = "hashedPassword";
@@ -65,7 +63,17 @@ public class SignUpTest {
             }
         }
     }
-
-
+    @org.junit.Test
+    public void testSignUpHashingErrorThrowsException() {
+        UserDto userDto = new UserDto("4", "Albin", "Arifaj", "albin@viviane.com", "albin", "password", "password", Role.USER, LocalDateTime.now());
+        try (MockedStatic<PasswordHasher> mockedPasswordHasher = mockStatic(PasswordHasher.class)) {
+            mockedPasswordHasher.when(PasswordHasher::generateSalt).thenReturn("randomSalt");
+            mockedPasswordHasher.when(() -> PasswordHasher.generateSaltedHash(userDto.getPassword(), "randomSalt"))
+                    .thenThrow(new RuntimeException("Hashing error"));
+            assertThrows(RuntimeException.class, () -> {
+                UserService.signUP(userDto);
+            });
+        }
+    }
 }
 
