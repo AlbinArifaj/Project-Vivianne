@@ -49,8 +49,8 @@ public class SignUpTest {
         }
     }
     @org.junit.Test
-    public void testSignUp_nullEmail() {
-        UserDto userDto = new UserDto("4", "Albin", "Arifaj", "albin@viviane.com", "albin", "password", "password", Role.USER, LocalDateTime.now());
+    public void testSignUpNullEmail() {
+        UserDto userDto = new UserDto("4", "Albin", "Arifaj", null, "albin", "password", "password", Role.USER, LocalDateTime.now());
         String salt = "salt";
         String hashedPassword = "hashedPassword";
         try (MockedStatic<PasswordHasher> mockedPasswordHasher = mockStatic(PasswordHasher.class)) {
@@ -63,6 +63,7 @@ public class SignUpTest {
             }
         }
     }
+    
     @org.junit.Test
     public void testSignUpHashingErrorThrowsException() {
         UserDto userDto = new UserDto("4", "Albin", "Arifaj", "albin@viviane.com", "albin", "password", "password", Role.USER, LocalDateTime.now());
