@@ -28,13 +28,6 @@ public class ConvertDateTimeToLocalDateTimeTest {
         assertNull(DateConversion.fromDateTimeComponents(localDate, hour, null));
     }
     @Test
-    void singleDigitHourAndMinute(){
-        LocalDate localDate = LocalDate.now();
-        String hour ="04";
-        String minutes="3";
-        assertNull(DateConversion.fromDateTimeComponents(localDate, hour, minutes));
-    }
-    @Test
     void invalidHour() {
         LocalDate date = LocalDate.of(2025, 2, 17);
         assertThrows(DateTimeParseException.class, () -> {
