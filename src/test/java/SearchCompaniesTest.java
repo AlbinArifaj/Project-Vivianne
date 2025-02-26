@@ -38,7 +38,7 @@ public class SearchCompaniesTest {
         assertEquals("Desc", company.getDescription());
         assertEquals(ACTIVE, company.getCompanyStatus());
 
-        mockedRepo.verify(() -> CompanyService.searchCompanies("TestCo"));
+        mockedRepo.verify(() -> CompanyRepository.searchCompanies("TestCo"));
 
         }
     }
@@ -54,7 +54,7 @@ public class SearchCompaniesTest {
                 CompanyService.searchCompanies("Unknown"));
                 assertEquals("No companies found with this name", exception.getMessage());
 
-            mockedRepo.verify(() -> CompanyService.searchCompanies("Unknown"));
+            mockedRepo.verify(() -> CompanyRepository.searchCompanies("Unknown"));
         }
     }
 
@@ -87,7 +87,7 @@ public class SearchCompaniesTest {
             List<Company> companies = CompanyService.searchCompanies("");
             assertFalse(companies.isEmpty());
 
-            mockedRepo.verify(() -> CompanyService.searchCompanies(""));
+            mockedRepo.verify(() -> CompanyRepository.searchCompanies(""));
         }
     }
 
