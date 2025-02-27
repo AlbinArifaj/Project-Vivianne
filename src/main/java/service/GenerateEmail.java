@@ -10,13 +10,12 @@ public class GenerateEmail {
     }
 
 
-    private static String generateEmail(String firstName, String lastName,int numberOfUsers) {
+    public static String generateEmail(String firstName, String lastName,int numberOfUsers) {
         StringBuilder email = new StringBuilder();
         email.append(firstName);
         email.append(lastName);
         if(numberOfUsers ==0){
             email.append(domainName);
-
         }else{
             email.append(numberOfUsers).append(domainName);
         }
