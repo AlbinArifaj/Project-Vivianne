@@ -54,7 +54,9 @@ public class SearchCompaniesTest {
                 CompanyService.searchCompanies("Unknown"));
                 assertEquals("No companies found with this name", exception.getMessage());
 
-            mockedRepo.verify(() -> CompanyService.searchCompanies("Unknown"));
+
+            mockedRepo.verify(() -> CompanyRepository.searchCompanies("Unknown"));
+
         }
     }
 
