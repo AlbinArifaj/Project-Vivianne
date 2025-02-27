@@ -9,14 +9,14 @@ import service.GenerateEmail;
 public class GenerateEmailTest {
     @Test
    void validGenerateEmail(){
-       assertEquals("albinarifaj1@vivianne.com",GenerateEmail.email("albin","arifaj",1));
+       assertEquals("albinarifaj1@vivianne.com",GenerateEmail.generateEmail("albin","arifaj",1));
    }
     @Test
     void invalidGenerateEmail(){
-        assertNotEquals("albinarifaj3@vivianne.com",GenerateEmail.email("albin","arifaj",1));
+        assertNotEquals("albinarifaj3@vivianne.com",GenerateEmail.generateEmail("albin","arifaj",1));
     }
     @Test
     void edgeCaseGenerateEmail(){
-        assertEquals("albinarifaj@vivianne.com",GenerateEmail.email("albin","arifaj",0));
+        assertEquals("albinarifaj@vivianne.com",GenerateEmail.generateEmail("albin","arifaj",0));
     }
 }
